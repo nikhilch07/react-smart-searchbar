@@ -1,9 +1,9 @@
-import React from 'react';
+import { DemoPage } from './demo/DemoPage';
 
 function App() {
   return (
     <div>
-      Welcome to Searchbar component!
+      <DemoPage />
     </div>
   );
 }

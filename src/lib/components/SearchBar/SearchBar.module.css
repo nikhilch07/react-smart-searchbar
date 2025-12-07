@@ -1,0 +1,49 @@
+.root {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid #cbd5e1; /* slate-300-ish */
+    font-size: 0.9rem;
+    outline: none;
+  }
+  
+  .input:focus {
+    border-color: #4f46e5; /* indigo-600-ish */
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
+  }
+  
+  .list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+  
+    margin-top: 0.25rem;
+    padding: 0.25rem 0;
+  
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb; /* gray-200-ish */
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  
+  .listItem {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  
+  .listItem:hover {
+    background-color: #f3f4f6; /* gray-100-ish */
+  }
+  
