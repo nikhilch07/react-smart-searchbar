@@ -17,6 +17,10 @@ export function DemoPage() {
   const filtered = cities.filter((city) =>
     city.toLowerCase().includes(query.toLowerCase()),
   );
+  
+  const handleSelect = (city: string) => {
+    setQuery(city);
+  }
 
   return (
     <div
@@ -45,6 +49,7 @@ export function DemoPage() {
           results={filtered}
           placeholder="Search cities..."
           ariaLabel="Search cities"
+          onSelect={handleSelect}
         />
       </div>
     </div>

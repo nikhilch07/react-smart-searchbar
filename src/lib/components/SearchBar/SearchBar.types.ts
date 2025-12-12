@@ -3,13 +3,18 @@ export type SearchResult = any; // we'll genericize later
 export type SearchBarProps<T = SearchResult> = {
   /** Controlled value of the input */
   value?: string;
-  /** Uncontrolled initial value */
-  defaultValue?: string;
+
   /** Called on every keystroke */
   onChange?: (value: string) => void;
 
   /** Called when a search should be performed (we’ll debounce later) */
   onSearch?: (query: string) => Promise<T[]> | T[];
+
+  /** Debounce delay in ms for calling onSearch. Default could be 300ms. */
+  debounceMs?: number;
+
+  /** Minimum characters before triggering onSearch (e.g., 2 or 3). */
+  minChars?: number;
 
   /** External results (if parent handles fetching/filtering) */
   results?: T[];
