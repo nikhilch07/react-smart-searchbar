@@ -1,4 +1,4 @@
-export type SearchResult = any; // we'll genericize later
+export type SearchResult = any; 
 
 export type SearchBarProps<T = SearchResult> = {
   /** Controlled value of the input */
@@ -35,4 +35,13 @@ export type SearchBarProps<T = SearchResult> = {
 
   /** Whether to disable the input */
   disabled?: boolean;
+
+  /** Custom renderer for each option (escape hatch for UI). */
+  renderOption?: (item: T, state: { isActive: boolean; index: number }) => React.ReactNode;
+
+  /** Custom renderer when there are no results. */
+  renderEmpty?: (query: string) => React.ReactNode;
+
+  /** Optional custom loading renderer. */
+  renderLoading?: () => React.ReactNode;
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { clsx } from 'clsx';
 import type { SearchBarProps } from './SearchBar.types';
 import styles from './SearchBar.module.css';
@@ -18,6 +18,9 @@ export function SearchBar<T>({
   disabled,
   debounceMs,
   minChars = 2,
+  renderOption,
+  renderEmpty,
+  renderLoading,
 }: SearchBarProps<T>) {
   // Uncontrolled internal state (if parent doesn’t pass `value`)
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -26,11 +29,12 @@ export function SearchBar<T>({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // TODO: later this will be replaced with async / debounced state
   const displayResults = results ?? internalResults;
   const hasResults = displayResults.length > 0;
   const debounceDelay = debounceMs ?? 300;
   const debouncedQuery = useDebouncedValue(value, debounceDelay);
+
+  const optionsRef = useRef<(HTMLLIElement | null)[]>([]);
 
   useEffect(() => {
     // If no onSearch is provided, we don't manage internal results.
@@ -51,7 +55,7 @@ export function SearchBar<T>({
         setIsLoading(true);
         setError(null);
 
-        const results = await onSearch(debouncedQuery);
+        const results = await onSearch(debouncedQuery!);
         if (cancelled) return;
 
         const normalized = Array.isArray(results) ? results : [];
@@ -74,35 +78,51 @@ export function SearchBar<T>({
 
     void performSearch();
 
-    return () => (cancelled = true);
+    return () => {
+      cancelled = true;
+    };
   }, [debouncedQuery, onSearch, minChars]);
+
+  useEffect(() => {
+    if (activeIndex === null) return;
+    const el = optionsRef.current[activeIndex];
+    if (!el) return;
+
+    el.scrollIntoView({
+      block: 'nearest',
+    });
+  }, [activeIndex]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = event.target.value;
     onChange?.(nextValue);
     setIsOpen(true);
 
-    // Later we'll call onSearch here with debounce
     if (onSearch) {
-      // fire-and-forget for now, we'll manage data in parent for this skeleton
       void onSearch(nextValue);
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!hasResults || !isOpen) {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-        setActiveIndex(null);
-      }
+    if (event.key === 'Escape') {
+      setIsOpen(false);
+      setActiveIndex(null);
       return;
     }
+
     if (event.key === 'ArrowDown') {
       event.preventDefault();
+
+      if (!isOpen && hasResults) {
+        setIsOpen(true);
+        setActiveIndex(0);
+        return;
+      }
+
       setActiveIndex((prev) => {
         if (prev === null) return 0;
         const next = prev + 1;
-        return next >= results.length ? results.length - 1 : next;
+        return next >= displayResults.length ? displayResults.length - 1 : next;
       });
     }
 
@@ -147,11 +167,25 @@ export function SearchBar<T>({
 
   return (
     <div className={clsx(styles.root, className)}>
+      <div aria-live="polite" className="sr-only">
+        {isLoading
+          ? 'Loading results...'
+          : error
+            ? 'Error while loading results'
+            : isOpen && hasResults
+              ? `${displayResults.length} results available.`
+              : isOpen && !hasResults && !isLoading
+                ? 'No results found.'
+                : ''}
+      </div>
       <input
         role="combobox"
         aria-expanded={isOpen}
         aria-controls={isOpen && hasResults ? listboxId : undefined}
         aria-autocomplete="list"
+        aria-activedescendant={
+          isOpen && activeIndex != null ? `${listboxId}-option-${activeIndex}` : undefined
+        }
         type="text"
         value={value}
         onChange={handleChange}
@@ -168,7 +202,7 @@ export function SearchBar<T>({
         <ul className={clsx(styles.list, listClassName)} role="listbox" id={listboxId}>
           {isLoading && (
             <li className={styles.listItem} aria-disabled={true}>
-              Loading...
+              {renderLoading ? renderLoading() : 'Loading...'}
             </li>
           )}
           {!isLoading && error && (
@@ -176,26 +210,38 @@ export function SearchBar<T>({
               {error}
             </li>
           )}
+          {!isLoading && !hasResults && !error && (
+            <li className={styles.listItem} aria-disabled={true}>
+              {renderEmpty ? renderEmpty(value) : 'No results found.'}
+            </li>
+          )}
           {!isLoading &&
             !error &&
             hasResults &&
-            displayResults.map((item, index) => (
-              <li
-                key={index}
-                role="option"
-                id={listboxId}
-                className={clsx(styles.listItem, activeIndex === index && styles.listItemActive)}
-                onMouseDown={(e) => {
-                  // prevent input blur before click
-                  e.preventDefault();
-                  onSelect?.(item);
-                  setIsOpen(false);
-                }}
-              >
-                {/* Later we'll support renderOption; for now use simple text */}
-                {String(item)}
-              </li>
-            ))}
+            displayResults.map((item, index) => {
+              const optionId = `${listboxId}-option-${index}`;
+              return (
+                <li
+                  key={index}
+                  role="option"
+                  id={optionId}
+                  ref={(el) => {
+                    optionsRef.current[index] = el;
+                  }}
+                  className={clsx(styles.listItem, activeIndex === index && styles.listItemActive)}
+                  onMouseDown={(e) => {
+                    // prevent input blur before click
+                    e.preventDefault();
+                    onSelect?.(item);
+                    setIsOpen(false);
+                  }}
+                >
+                  {renderOption
+                    ? renderOption(item, { isActive: activeIndex === index, index })
+                    : String(item)}
+                </li>
+              );
+            })}
         </ul>
       )}
     </div>
