@@ -22,6 +22,11 @@ export function DemoPage() {
     setQuery(city);
   }
 
+  const handleSearch = async(query: string) => {
+     await new Promise((res) => setTimeout(res, 500));
+     return cities.filter((city) => city.toLowerCase().includes(query.toLowerCase()))
+  }
+
   return (
     <div
       style={{
@@ -50,6 +55,7 @@ export function DemoPage() {
           placeholder="Search cities..."
           ariaLabel="Search cities"
           onSelect={handleSelect}
+          onSearch={handleSearch}
         />
       </div>
     </div>
