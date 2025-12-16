@@ -21,6 +21,8 @@ export function SearchBar<T>({
   renderOption,
   renderEmpty,
   renderLoading,
+  getOptionLabel,
+  getOptionValue,
 }: SearchBarProps<T>) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -214,7 +216,7 @@ export function SearchBar<T>({
               const optionId = `${listboxId}-option-${index}`;
               return (
                 <li
-                  key={index}
+                  key={getOptionValue ? String(getOptionValue(item)) : index}
                   role="option"
                   id={optionId}
                   ref={(el) => {
@@ -230,7 +232,7 @@ export function SearchBar<T>({
                 >
                   {renderOption
                     ? renderOption(item, { isActive: activeIndex === index, index })
-                    : String(item)}
+                    : getOptionLabel ? getOptionLabel(item) : typeof item === 'string' ? item : String(item)}
                 </li>
               );
             })}

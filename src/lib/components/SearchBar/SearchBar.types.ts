@@ -44,4 +44,10 @@ export type SearchBarProps<T = SearchResult> = {
 
   /** Optional custom loading renderer. */
   renderLoading?: () => React.ReactNode;
+
+  /** Returns the text label shown for an option in default rendering. */
+  getOptionLabel?: (item: T) => string;
+
+  /** Returns a stable unique value for an option (used for keys, selection identity, etc). */
+  getOptionValue?: (item: T) => string | number;
 };

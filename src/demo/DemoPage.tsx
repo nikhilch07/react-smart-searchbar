@@ -8,7 +8,7 @@ type User = {
 };
 
 const users: User[] = [
-  { id: 1, name: 'Nikhil', email: 'nikhil@email.com' },
+  { id: 1, name: 'John', email: 'john@email.com' },
   { id: 2, name: 'Alex', email: 'alex@email.com' },
   { id: 3, name: 'Sarah', email: 'sarah@email.com' },
 ];
@@ -138,6 +138,7 @@ export function DemoPage() {
             ariaLabel="Search users"
             placeholder="Search users..."
             onSelect={(user) => setQuery(user.name)}
+            getOptionLabel={(user) => user.name}
           />
         )}
 
