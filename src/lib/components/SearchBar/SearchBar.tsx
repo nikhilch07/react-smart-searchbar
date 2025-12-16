@@ -22,7 +22,6 @@ export function SearchBar<T>({
   renderEmpty,
   renderLoading,
 }: SearchBarProps<T>) {
-  // Uncontrolled internal state (if parent doesn’t pass `value`)
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [internalResults, setInternalResults] = useState<T[]>([]);
@@ -41,7 +40,7 @@ export function SearchBar<T>({
     if (!onSearch) return;
 
     // If query is too short, clear internal results and don't call onSearch.
-    if (displayResults.length < (minChars ?? 0)) {
+    if ((debouncedQuery ?? '').length < (minChars ?? 0)) {
       setInternalResults([]);
       setIsLoading(false);
       setError(null);
@@ -95,16 +94,13 @@ export function SearchBar<T>({
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = event.target.value;
-    onChange?.(nextValue);
+    onChange(nextValue);
     setIsOpen(true);
-
-    if (onSearch) {
-      void onSearch(nextValue);
-    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
+      event.preventDefault();
       setIsOpen(false);
       setActiveIndex(null);
       return;
@@ -113,11 +109,13 @@ export function SearchBar<T>({
     if (event.key === 'ArrowDown') {
       event.preventDefault();
 
-      if (!isOpen && hasResults) {
+      if (!isOpen) {
         setIsOpen(true);
         setActiveIndex(0);
         return;
       }
+
+      if (!hasResults) return;
 
       setActiveIndex((prev) => {
         if (prev === null) return 0;
@@ -129,24 +127,18 @@ export function SearchBar<T>({
     if (event.key === 'ArrowUp') {
       event.preventDefault();
       setActiveIndex((prev) => {
-        if (prev === null) return results!.length - 1;
+        if (prev === null) return displayResults.length - 1;
         const next = prev - 1;
         return next < 0 ? 0 : next;
       });
     }
 
     if (event.key === 'Enter') {
-      if (activeIndex != null && results![activeIndex]) {
+      if (activeIndex != null && displayResults[activeIndex]) {
         event.preventDefault();
-        onSelect?.(results![activeIndex]);
+        onSelect?.(displayResults[activeIndex]);
         setIsOpen(false);
       }
-    }
-
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      setActiveIndex(null);
-      setIsOpen(false);
     }
   };
 

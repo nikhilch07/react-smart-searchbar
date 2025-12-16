@@ -5,7 +5,7 @@ export type SearchBarProps<T = SearchResult> = {
   value?: string;
 
   /** Called on every keystroke */
-  onChange?: (value: string) => void;
+  onChange: (value: string) => void;
 
   /** Called when a search should be performed (we’ll debounce later) */
   onSearch?: (query: string) => Promise<T[]> | T[];
