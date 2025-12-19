@@ -1,214 +1,231 @@
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { SearchBar } from '../lib/components/SearchBar/SearchBar';
 
-type User = {
+type Skill = {
   id: number;
   name: string;
-  email: string;
+  category: 'UI' | 'Frontend' | 'DX' | 'Quality';
 };
 
-const users: User[] = [
-  { id: 1, name: 'John', email: 'john@email.com' },
-  { id: 2, name: 'Alex', email: 'alex@email.com' },
-  { id: 3, name: 'Sarah', email: 'sarah@email.com' },
+const SKILLS: Skill[] = [
+  { id: 1, name: 'Design Systems', category: 'UI' },
+  { id: 2, name: 'Accessibility (WCAG / ARIA)', category: 'UI' },
+  { id: 3, name: 'Performance Optimization', category: 'Frontend' },
+  { id: 4, name: 'React + TypeScript', category: 'Frontend' },
+  { id: 5, name: 'Testing (RTL / Jest)', category: 'Quality' },
+  { id: 6, name: 'CI/CD + Release Hygiene', category: 'DX' },
 ];
 
-const searchUsers = async (query: string): Promise<User[]> => {
-  await new Promise((r) => setTimeout(r, 650));
-  return users.filter((u) => u.name.toLowerCase().includes(query.toLowerCase()));
+const chip = (category: Skill['category']) => {
+  switch (category) {
+    case 'UI':
+      return { label: 'UI', cls: 'bg-indigo-500/15 text-indigo-200 ring-indigo-400/20' };
+    case 'Frontend':
+      return { label: 'Frontend', cls: 'bg-emerald-500/15 text-emerald-200 ring-emerald-400/20' };
+    case 'DX':
+      return { label: 'DX', cls: 'bg-amber-500/15 text-amber-200 ring-amber-400/20' };
+    case 'Quality':
+      return { label: 'Quality', cls: 'bg-sky-500/15 text-sky-200 ring-sky-400/20' };
+  }
 };
+
+async function searchSkills(query: string): Promise<Skill[]> {
+  // Simulate network latency
+  await new Promise((r) => setTimeout(r, 450));
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  return SKILLS.filter((s) => s.name.toLowerCase().includes(q));
+}
 
 type Flavor = 'default' | 'custom';
 
-function Spinner() {
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        width: 14,
-        height: 14,
-        borderRadius: '50%',
-        border: '2px solid rgba(17,24,39,0.25)',
-        borderTopColor: 'rgba(17,24,39,0.95)',
-        display: 'inline-block',
-        animation: 'spin 0.8s linear infinite',
-      }}
-    />
-  );
-}
-
-function Avatar({ name }: { name: string }) {
-  const initial = name.trim().charAt(0).toUpperCase() || '?';
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        width: 26,
-        height: 26,
-        borderRadius: 999,
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(15, 23, 42, 0.08)',
-        fontSize: 12,
-        fontWeight: 700,
-        color: '#0f172a',
-        flex: '0 0 auto',
-      }}
-    >
-      {initial}
-    </span>
-  );
-}
-
 export function DemoPage() {
-  const [query, setQuery] = useState('');
   const [flavor, setFlavor] = useState<Flavor>('default');
+  const [query, setQuery] = useState('');
 
-  const buttonStyle = (active: boolean): React.CSSProperties => ({
-    padding: '8px 12px',
-    borderRadius: 10,
-    border: '1px solid rgba(255,255,255,0.15)',
-    background: active ? '#1f2937' : 'transparent',
-    color: '#e5e7eb',
-    cursor: 'pointer',
-    fontSize: 14,
-    lineHeight: 1,
-  });
+  const header = useMemo(() => {
+    return flavor === 'default'
+      ? {
+          title: 'Default UI',
+          desc: 'SearchBar owns the async results + loading/empty states. Good for quick integrations.',
+        }
+      : {
+          title: 'Custom renderOption',
+          desc: 'Escape hatches: custom option layout, loading, and empty states — without changing behavior.',
+        };
+  }, [flavor]);
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        minWidth: '100vw',
-        display: 'flex',
-        justifyContent: 'center',
-        paddingTop: '15rem',
-        background: '#0f172a',
-        color: '#e5e7eb',
-      }}
-    >
-      {/* simple keyframes for Spinner */}
-      <style>
-        {`
-          @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-          }
-        `}
-      </style>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900 text-slate-100">
+      {/* Glow */}
+      <div className="pointer-events-none fixed inset-0 opacity-40 [background:radial-gradient(900px_circle_at_50%_-20%,rgba(99,102,241,0.35),transparent_55%),radial-gradient(700px_circle_at_15%_20%,rgba(16,185,129,0.25),transparent_55%),radial-gradient(700px_circle_at_85%_25%,rgba(245,158,11,0.20),transparent_55%)]" />
 
-      <div style={{ width: '100%', maxWidth: 620 }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Smart Searchbar – Demo</h1>
-        <p style={{ fontSize: '0.95rem', marginBottom: '1rem', opacity: 0.8 }}>
-          Toggle between default behavior (SearchBar controls async results) and a custom “escape hatch”
-          UI using render props.
-        </p>
+      <div className="relative mx-auto w-full max-w-5xl px-6 py-16">
+        <div className="flex flex-col gap-8">
+          {/* Header */}
+          <div className="flex flex-col gap-3">
+            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs text-slate-200 ring-1 ring-white/10">
+              <span className="h-2 w-2 rounded-full bg-indigo-400" />
+              Search primitives • async • a11y • keyboard
+            </div>
 
-        {/* Toggle */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={() => setFlavor('default')}
-            style={buttonStyle(flavor === 'default')}
-          >
-            Default
-          </button>
-          <button
-            type="button"
-            onClick={() => setFlavor('custom')}
-            style={buttonStyle(flavor === 'custom')}
-          >
-            Custom renderOption
-          </button>
-        </div>
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+              Smart Searchbar <span className="text-indigo-300">Demo</span>
+            </h1>
+            <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+              A small, composable SearchBar library focused on the hard parts: debounced async search,
+              keyboard navigation, and ARIA semantics — with escape hatches for UI.
+            </p>
+          </div>
 
-        <div style={{ marginBottom: 10, opacity: 0.85 }}>
-          Viewing:{' '}
-          <strong>{flavor === 'default' ? 'Default SearchBar UI' : 'Custom option + loading + empty'}</strong>
-        </div>
-
-        {/* Flavor 1: Default - SearchBar owns results/loading/empty */}
-        {flavor === 'default' && (
-          <SearchBar<User>
-            value={query}
-            onChange={setQuery}
-            onSearch={searchUsers}
-            minChars={1}
-            ariaLabel="Search users"
-            placeholder="Search users..."
-            onSelect={(user) => setQuery(user.name)}
-            getOptionLabel={(user) => user.name}
-          />
-        )}
-
-        {/* Flavor 2: Custom - renderOption + spinner + fancy empty */}
-        {flavor === 'custom' && (
-          <SearchBar<User>
-            value={query}
-            onChange={setQuery}
-            onSearch={searchUsers}
-            minChars={2}
-            ariaLabel="Search users"
-            placeholder="Try: ni, al, sa (or type zz for empty)"
-            onSelect={(user) => setQuery(user.name)}
-            renderLoading={() => (
-              <div style={{ padding: 10, color: '#111827', display: 'flex', gap: 10, alignItems: 'center' }}>
-                <Spinner />
-                <span style={{ fontWeight: 600 }}>Searching directory…</span>
-                <span style={{ opacity: 0.7, fontSize: 12 }}>hang tight</span>
+          {/* Card */}
+          <div className="rounded-2xl bg-white/[0.04] p-6 ring-1 ring-white/10 backdrop-blur-sm">
+            {/* Tabs */}
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <div className="text-sm font-medium text-slate-100">Try two flavors</div>
+                <div className="text-xs text-slate-400">Same behavior. Different rendering ownership.</div>
               </div>
-            )}
-            renderEmpty={(q) => (
-              <div style={{ padding: 10, color: '#111827' }}>
-                <div style={{ fontWeight: 800, marginBottom: 4 }}>No matches found</div>
-                <div style={{ opacity: 0.8 }}>
-                  We couldn’t find anyone matching <strong>“{q}”</strong>. Try a shorter name or check spelling.
-                </div>
-                <div style={{ marginTop: 6, fontSize: 12, opacity: 0.7 }}>
-                  Tip: type <strong>zz</strong> to see this state.
-                </div>
-              </div>
-            )}
-            renderOption={(user, { isActive }) => (
-              <div
-                style={{
-                  padding: '8px 10px',
-                  borderRadius: 10,
-                  background: isActive ? 'rgba(229,231,235,0.9)' : 'transparent',
-                  color: '#111827', // important if dropdown background is white
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                }}
-              >
-                {/* “Logo / icon” */}
-                <Avatar name={user.name} />
 
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 800, lineHeight: 1.2 }}>{user.name}</div>
-                  <div style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.2 }}>{user.email}</div>
-                </div>
-
-                {/* trailing icon to make it feel “product-y” */}
-                <span
-                  aria-hidden="true"
-                  style={{
-                    marginLeft: 'auto',
-                    opacity: isActive ? 1 : 0.45,
-                    fontWeight: 900,
-                  }}
+              <div className="flex items-center gap-2 rounded-xl bg-black/20 p-1 ring-1 ring-white/10">
+                <button
+                  type="button"
+                  onClick={() => setFlavor('default')}
+                  className={`rounded-lg px-3 py-1.5 text-sm transition ${
+                    flavor === 'default'
+                      ? 'bg-white/10 text-white ring-1 ring-white/15'
+                      : 'text-slate-300 hover:bg-white/5'
+                  }`}
                 >
-                  ↵
-                </span>
+                  Default
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFlavor('custom')}
+                  className={`rounded-lg px-3 py-1.5 text-sm transition ${
+                    flavor === 'custom'
+                      ? 'bg-white/10 text-white ring-1 ring-white/15'
+                      : 'text-slate-300 hover:bg-white/5'
+                  }`}
+                >
+                  Custom
+                </button>
               </div>
-            )}
-          />
-        )}
+            </div>
 
-        <div style={{ marginTop: 14, fontSize: 12, opacity: 0.75 }}>
-          Note: “Default” shows the out-of-the-box UI. “Custom” demonstrates escape hatches for rendering options,
-          loading, and empty state without changing SearchBar logic.
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              {/* Left: Search */}
+              <div className="rounded-2xl bg-black/25 p-5 ring-1 ring-white/10">
+                <div className="mb-3">
+                  <div className="text-sm font-semibold text-slate-100">Viewing: {header.title}</div>
+                  <div className="text-xs text-slate-400">{header.desc}</div>
+                </div>
+
+                {flavor === 'default' ? (
+                  <SearchBar <Skill>
+                  value={query}
+                  onChange={setQuery}
+                  onSearch={searchSkills}
+                  minChars={1}
+                  showSearchIcon
+                  showClearResults
+                  onClearResults={() => console.log('cleared')}
+                  onSelect={(item) => setQuery(item.name)}
+                  />
+                ) : (
+                  <SearchBar<Skill>
+                    value={query}
+                    onChange={setQuery}
+                    onSearch={searchSkills}
+                    minChars={1}
+                    debounceMs={250}
+                    placeholder="Search skills (custom UI)"
+                    ariaLabel="Search skills"
+                    onSelect={(item) => setQuery(item.name)}
+                    getOptionLabel={(item) => item.name}
+                    getOptionValue={(item) => item.id}
+                    renderLoading={() => (
+                      <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-slate-700">
+                        <span className="inline-flex h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600" />
+                        Searching…
+                      </div>
+                    )}
+                    renderEmpty={(q) => (
+                      <div className="px-2 py-1.5 text-sm text-slate-700">
+                        No matches for <span className="font-medium">“{q}”</span>. Try “react” or “design”.
+                      </div>
+                    )}
+                    renderOption={(item, { isActive }) => {
+                      const c = chip(item.category);
+                      return (
+                        <div
+                          className={`flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition ${
+                            isActive ? 'bg-slate-200' : 'bg-transparent'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="grid h-9 w-9 place-items-center rounded-xl bg-slate-900 text-white shadow-sm">
+                              {/* Tiny icon-like glyph */}
+                              <span className="text-xs font-semibold">{item.name[0]}</span>
+                            </div>
+                            <div className="leading-tight">
+                              <div className="text-sm font-semibold text-slate-900">{item.name}</div>
+                              <div className="text-xs text-slate-600">Search primitive sample result</div>
+                            </div>
+                          </div>
+
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs ring-1 ${c.cls}`}
+                          >
+                            {c.label}
+                          </span>
+                        </div>
+                      );
+                    }}
+                  />
+                )}
+
+                <div className="mt-4 text-xs text-slate-400">
+                  Tip: Arrow keys to navigate, Enter to select, Escape to close.
+                </div>
+              </div>
+
+              {/* Right: Notes */}
+              <div className="rounded-2xl bg-black/25 p-5 ring-1 ring-white/10">
+                <div className="text-sm font-semibold text-slate-100">What this shows</div>
+                <ul className="mt-3 space-y-2 text-sm text-slate-300">
+                  <li className="flex gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-indigo-400" />
+                    Debounced async search (with cancellation guard)
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    Keyboard navigation + auto-scroll active option
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-amber-400" />
+                    ARIA combobox/listbox semantics + announcements
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-sky-400" />
+                    Escape hatches for rendering without rewriting logic
+                  </li>
+                </ul>
+
+                <div className="mt-6 rounded-xl bg-white/5 p-4 text-xs text-slate-300 ring-1 ring-white/10">
+                  <div className="font-semibold text-slate-200">Portfolio note</div>
+                  <div className="mt-1 leading-relaxed">
+                    Position this as <span className="text-slate-100">search primitives</span> rather than a “pretty
+                    widget”. Serious teams install these to avoid rebuilding keyboard + a11y + async correctness.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-xs text-slate-500">
+            Built with React + Vite • Designed for design-system interviews (API clarity, a11y, escape hatches)
+          </div>
         </div>
       </div>
     </div>

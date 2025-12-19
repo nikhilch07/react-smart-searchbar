@@ -1,8 +1,21 @@
 {
   "name": "react-smart-searchbar",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "1.0.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/react-smart-searchbar.cjs.js",
+  "module": "./dist/react-smart-searchbar.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/react-smart-searchbar.es.js",
+      "require": "./dist/react-smart-searchbar.cjs.js"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,9 +24,11 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,css,md}\""
   },
   "dependencies": {
-    "clsx": "^2.1.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "clsx": "^2.1.1"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
@@ -32,6 +47,7 @@
     "prettier": "^3.7.4",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vite-plugin-dts": "^4.5.4"
   }
 }
