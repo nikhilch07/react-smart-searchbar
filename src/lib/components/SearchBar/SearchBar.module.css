@@ -1,52 +1,127 @@
 .root {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    max-width: 400px;
-  }
-  
-  .input {
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    border: 1px solid #cbd5e1; /* slate-300-ish */
-    font-size: 0.9rem;
-    outline: none;
-  }
-  
-  .input:focus {
-    border-color: #4f46e5; /* indigo-600-ish */
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
-  }
-  
-  .list {
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 500;
-    margin-top: .5rem;
-    padding: 0.25rem 0;
-    background-color: #ffffff;
-    color: #000;
-    border-radius: 0.5rem;
-    border: 1px solid #e5e7eb; /* gray-200-ish */
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-  
-    max-height: 260px;
-    overflow-y: auto;
-  }
-  
-  .listItem {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.9rem;
-    cursor: pointer;
-  }
-  
-  .listItem:hover {
-    background-color: #f3f4f6; /* gray-100-ish */
-  }
-  
-  .listItemActive {
-    background-color: #e5e7eb; /* gray-200-ish */
-  }
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  display: block;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Input */
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 44px;               /* ✅ better touch target */
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.6); /* slate-ish */
+  background: rgba(255, 255, 255, 0.98);
+  color: #0f172a;             /* slate-900 */
+  font-size: 14px;
+  line-height: 1;
+  outline: none;
+
+  transition: box-shadow 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.input::placeholder {
+  color: rgba(100, 116, 139, 0.9); /* slate-500 */
+}
+
+.input:focus {
+  border-color: rgba(99, 102, 241, 0.9); /* indigo */
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Dropdown */
+.list {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+
+  z-index: 50;
+  margin: 0;
+  padding: 6px;
+
+  background: rgba(255, 255, 255, 0.98);  /* ✅ not see-through */
+  color: #0f172a;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  box-shadow:
+    0 16px 40px rgba(2, 6, 23, 0.22);      /* deeper shadow for dark bg */
+
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+/* Items */
+.listItem {
+  padding: 10px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 120ms ease;
+}
+
+.listItem:hover {
+  background: rgba(226, 232, 240, 0.9); /* slate-200 */
+}
+
+.listItemActive {
+  background: rgba(199, 210, 254, 0.8); /* indigo-200 */
+}
+
+.inputWrap {
+  position: relative;
+  width: 100%;
+}
+
+.leadingIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(100, 116, 139, 0.9); /* slate */
+  pointer-events: none;
+  display: inline-flex;
+}
+
+.trailingButton {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(100, 116, 139, 0.9);
+  background: transparent;
+  border: 0;
+  padding: 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  appearance: none;
+}
+
+.trailingButton:hover {
+  color: rgba(30, 41, 59, 1); /* darker slate */
+  background: rgba(226, 232, 240, 0.9);
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.inputWithLeading {
+  padding-left: 34px; /* room for search icon */
+}
+
+.inputWithTrailing {
+  padding-right: 34px; /* room for clear button */
+}
+

@@ -1,8 +1,8 @@
-export type SearchResult = any; 
+import type { ReactNode } from 'react';
 
-export type SearchBarProps<T = SearchResult> = {
+export type SearchBarProps<T = unknown> = {
   /** Controlled value of the input */
-  value?: string;
+  value: string;
 
   /** Called on every keystroke */
   onChange: (value: string) => void;
@@ -37,17 +37,26 @@ export type SearchBarProps<T = SearchResult> = {
   disabled?: boolean;
 
   /** Custom renderer for each option (escape hatch for UI). */
-  renderOption?: (item: T, state: { isActive: boolean; index: number }) => React.ReactNode;
+  renderOption?: (item: T, state: { isActive: boolean; index: number }) => ReactNode;
 
   /** Custom renderer when there are no results. */
-  renderEmpty?: (query: string) => React.ReactNode;
+  renderEmpty?: (query: string) => ReactNode;
 
   /** Optional custom loading renderer. */
-  renderLoading?: () => React.ReactNode;
+  renderLoading?: () => ReactNode;
 
   /** Returns the text label shown for an option in default rendering. */
   getOptionLabel?: (item: T) => string;
 
   /** Returns a stable unique value for an option (used for keys, selection identity, etc). */
   getOptionValue?: (item: T) => string | number;
+
+  /** Show a search icon inside the input (left side). */
+  showSearchIcon?: boolean;
+
+  /** Show a clear (X) button when value is non-empty (right side). */
+  showClearResults?: boolean;
+
+  /** Optional callback fired after clear button is clicked. */
+  onClearResults?: () => void;
 };
