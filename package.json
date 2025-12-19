@@ -17,6 +17,16 @@
     },
     "./dist/react-smart-searchbar.css": "./dist/react-smart-searchbar.css"
   },
+  "keywords": [
+    "react",
+    "search",
+    "autocomplete",
+    "combobox",
+    "accessibility",
+    "design-system",
+    "headless",
+    "ui"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
