@@ -131,6 +131,7 @@ export function DemoPage() {
                   showClearResults
                   onClearResults={() => console.log('cleared')}
                   onSelect={(item) => setQuery(item.name)}
+
                   />
                 ) : (
                   <SearchBar<Skill>
@@ -142,6 +143,9 @@ export function DemoPage() {
                     placeholder="Search skills (custom UI)"
                     ariaLabel="Search skills"
                     onSelect={(item) => setQuery(item.name)}
+                    showSearchIcon
+                    showClearResults
+                    onClearResults={() => console.log('cleared')}
                     getOptionLabel={(item) => item.name}
                     getOptionValue={(item) => item.id}
                     renderLoading={() => (

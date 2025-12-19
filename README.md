@@ -27,7 +27,7 @@ yarn add react-smart-searchbar
 If you are cloning this repository to explore the demo:
 
 ```bash
-git clone https://github.com/<you>/react-smart-searchbar.git
+git clone https://github.com/nikhilch07/react-smart-searchbar.git
 cd react-smart-searchbar
 npm install
 npm run dev
@@ -67,6 +67,7 @@ const searchUsers = async (text: string): Promise<User[]> => {
 
 ```tsx
 import { SearchBar } from 'react-smart-searchbar';
+import 'react-smart-searchbar/dist/react-smart-searchbar.css';
 
 <SearchBar<User>
   value={query}
@@ -77,6 +78,9 @@ import { SearchBar } from 'react-smart-searchbar';
   minChars={2}
   debounceMs={300}
   onSelect={(user) => setQuery(user.name)}
+  showSearchIcon
+  showClearResults
+  onClearResults={() => console.log('cleared')}
   getOptionLabel={(user) => user.name}
   getOptionValue={(user) => user.id}
 />;
@@ -94,11 +98,7 @@ Use render props to inject your design language:
       <Spinner /> Searching directory…
     </div>
   )}
-  renderEmpty={(text) => (
-    <div className="dropdown-empty">
-      No teammates match “{text}”.
-    </div>
-  )}
+  renderEmpty={(text) => <div className="dropdown-empty">No teammates match “{text}”.</div>}
   renderOption={(user, { isActive }) => (
     <div className={clsx('dropdown-option', isActive && 'is-active')}>
       <Avatar name={user.name} />
@@ -108,7 +108,7 @@ Use render props to inject your design language:
       </div>
     </div>
   )}
-/>;
+/>
 ```
 
 ---
@@ -124,24 +124,27 @@ Run `npm run dev` and visit the local Vite URL to inspect `src/demo/DemoPage.tsx
 
 ## Props reference
 
-| Prop | Type | Description |
-| --- | --- | --- |
-| `value` | `string` | Current input value (controlled). Omit to use `''`. |
-| `onChange` | `(value: string) => void` | Fired on every keystroke; update your state here. |
-| `onSearch` | `(query: string) => Promise<T[]> \| T[]` | Optional async search handler. When supplied the component manages loading, errors, and results. |
-| `results` | `T[]` | Provide your own result list if you want to fetch/filter outside. |
-| `onSelect` | `(item: T) => void` | Called when the user presses Enter or clicks an option. |
-| `placeholder` | `string` | Input placeholder text (defaults to `Search...`). |
-| `ariaLabel` | `string` | Accessibility label when no `<label>` is associated. |
-| `minChars` | `number` | Minimum characters before triggering `onSearch` (default `2`). |
-| `debounceMs` | `number` | Delay before calling `onSearch` (default `300`). |
-| `disabled` | `boolean` | Disable the input. |
-| `className` / `inputClassName` / `listClassName` | `string` | Override container, input, or dropdown classes. |
-| `renderOption` | `(item, state) => ReactNode` | Custom renderer for list items (state includes `isActive` and `index`). |
-| `renderEmpty` | `(query: string) => ReactNode` | Custom empty state renderer. |
-| `renderLoading` | `() => ReactNode` | Custom loading UI shown while fetching results. |
-| `getOptionLabel` | `(item: T) => string` | Used when the default renderer is active to convert an item to text. |
-| `getOptionValue` | `(item: T) => string \| number` | Provides a stable key for list rendering. |
+| Prop                                             | Type                                     | Description                                                                                      |
+| ------------------------------------------------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `value`                                          | `string`                                 | Current input value (controlled). Omit to use `''`.                                              |
+| `onChange`                                       | `(value: string) => void`                | Fired on every keystroke; update your state here.                                                |
+| `onSearch`                                       | `(query: string) => Promise<T[]> \| T[]` | Optional async search handler. When supplied the component manages loading, errors, and results. |
+| `results`                                        | `T[]`                                    | Provide your own result list if you want to fetch/filter outside.                                |
+| `onSelect`                                       | `(item: T) => void`                      | Called when the user presses Enter or clicks an option.                                          |
+| `placeholder`                                    | `string`                                 | Input placeholder text (defaults to `Search...`).                                                |
+| `ariaLabel`                                      | `string`                                 | Accessibility label when no `<label>` is associated.                                             |
+| `minChars`                                       | `number`                                 | Minimum characters before triggering `onSearch` (default `2`).                                   |
+| `debounceMs`                                     | `number`                                 | Delay before calling `onSearch` (default `300`).                                                 |
+| `disabled`                                       | `boolean`                                | Disable the input.                                                                               |
+| `className` / `inputClassName` / `listClassName` | `string`                                 | Override container, input, or dropdown classes.                                                  |
+| `renderOption`                                   | `(item, state) => ReactNode`             | Custom renderer for list items (state includes `isActive` and `index`).                          |
+| `renderEmpty`                                    | `(query: string) => ReactNode`           | Custom empty state renderer.                                                                     |
+| `renderLoading`                                  | `() => ReactNode`                        | Custom loading UI shown while fetching results.                                                  |
+| `getOptionLabel`                                 | `(item: T) => string`                    | Used when the default renderer is active to convert an item to text.                             |
+| `getOptionValue`                                 | `(item: T) => string \| number`          | Provides a stable key for list rendering.                                                        |
+| `showSearchIcon`                                 | `boolean`                                | Show a magnifying glass icon in the input (default `false`).                                     |
+| `showClearResults`                               | `boolean`                                | Show a clear (X) button when there are results (default `false`).                                |
+| `onClearResults`                                 | `() => void`                             | Called when the clear button is clicked.                                                         |
 
 ---
 
@@ -170,4 +173,4 @@ The default CSS Module (`src/lib/components/SearchBar/SearchBar.module.css`) kee
 
 ## License
 
-MIT © Your Name Here
+MIT © Nikhil Cheriyala

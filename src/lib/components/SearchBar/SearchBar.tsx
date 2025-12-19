@@ -5,7 +5,7 @@ import styles from './SearchBar.module.css';
 import { useDebouncedValue } from '../../hooks/useDebouncedValue';
 
 export function SearchBar<T>({
-  value,
+  value = '',
   onChange,
   onSearch,
   results,
@@ -183,69 +183,68 @@ export function SearchBar<T>({
                 ? 'No results found.'
                 : ''}
       </div>
-   <div className={styles.inputWrap}>
-  {showSearchIcon && (
-    <span className={styles.leadingIcon} aria-hidden="true">
-      {/* Search icon */}
-      <svg viewBox="0 0 24 24" fill="none" className={styles.icon}>
-        <path
-          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+      <div className={styles.inputWrap}>
+        {showSearchIcon && (
+          <span className={styles.leadingIcon} aria-hidden="true">
+            {/* Search icon */}
+            <svg viewBox="0 0 24 24" fill="none" className={styles.icon}>
+              <path
+                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+        )}
+
+        <input
+          role="combobox"
+          aria-expanded={isOpen}
+          aria-controls={isOpen && hasResults ? listboxId : undefined}
+          aria-autocomplete="list"
+          aria-activedescendant={
+            isOpen && activeIndex != null ? `${listboxId}-option-${activeIndex}` : undefined
+          }
+          type="text"
+          value={value}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          aria-label={ariaLabel}
+          disabled={disabled}
+          className={clsx(
+            styles.input,
+            showSearchIcon && styles.inputWithLeading,
+            showClearResults && value && styles.inputWithTrailing,
+            inputClassName,
+          )}
         />
-      </svg>
-    </span>
-  )}
 
-  <input
-    role="combobox"
-    aria-expanded={isOpen}
-    aria-controls={isOpen && hasResults ? listboxId : undefined}
-    aria-autocomplete="list"
-    aria-activedescendant={
-      isOpen && activeIndex != null ? `${listboxId}-option-${activeIndex}` : undefined
-    }
-    type="text"
-    value={value}
-    onChange={handleChange}
-    onFocus={handleFocus}
-    onBlur={handleBlur}
-    onKeyDown={handleKeyDown}
-    placeholder={placeholder}
-    aria-label={ariaLabel}
-    disabled={disabled}
-    className={clsx(
-      styles.input,
-      showSearchIcon && styles.inputWithLeading,
-      showClearResults && value && styles.inputWithTrailing,
-      inputClassName
-    )}
-  />
-
-  {showClearResults && value && (
-    <button
-      type="button"
-      onMouseDown={(e) => e.preventDefault()} // prevent blur closing early
-      onClick={handleClear}
-      className={styles.trailingButton}
-      aria-label="Clear search"
-    >
-      {/* X icon */}
-      <svg viewBox="0 0 24 24" fill="none" className={styles.icon}>
-        <path
-          d="M6 18L18 6M6 6l12 12"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </button>
-  )}
-</div>
-
+        {showClearResults && value && (
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()} // prevent blur closing early
+            onClick={handleClear}
+            className={styles.trailingButton}
+            aria-label="Clear search"
+          >
+            {/* X icon */}
+            <svg viewBox="0 0 24 24" fill="none" className={styles.icon}>
+              <path
+                d="M6 18L18 6M6 6l12 12"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )}
+      </div>
 
       {isOpen && (
         <ul className={clsx(styles.list, listClassName)} role="listbox" id={listboxId}>
@@ -287,7 +286,11 @@ export function SearchBar<T>({
                 >
                   {renderOption
                     ? renderOption(item, { isActive: activeIndex === index, index })
-                    : getOptionLabel ? getOptionLabel(item) : typeof item === 'string' ? item : String(item)}
+                    : getOptionLabel
+                      ? getOptionLabel(item)
+                      : typeof item === 'string'
+                        ? item
+                        : String(item)}
                 </li>
               );
             })}
